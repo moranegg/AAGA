@@ -114,7 +114,7 @@ public class DefaultTeam {
 	  //sur points sans iles, sans degreeUn et sans voisinsDegreeUn
 	  //on appelle algo glouton
 	   domSet = domSetGloutonMain(points);
-	   //domSetLocalSearchingNaifMain(points, domSet);
+	   domSetLocalSearchingNaifMain(points, domSet);
 	   
 	   domSet.addAll(voisinsDegreeUn);
 	   domSet.addAll(iles);
