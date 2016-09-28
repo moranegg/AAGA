@@ -19,15 +19,108 @@ public class DefaultTeam {
     // else saveToFile("output",result);
     //<<<<< REMOVE
     
-//    System.out.println("Size : "+points.size());
-//    ArrayList<Point> domSet = domSetGloutonMain(points);
-//    System.out.println("Size : "+points.size());
-//    return domSetLocalSearchingNaifMain(points, domSet);
 
-    ArrayList<Point> domSet = domSetGloutonMain(result);
-    return domSetLocalSearchingNaifMain(result, domSet);
+    //System.out.println("Size : "+points.size());
+    //ArrayList<Point> domSet = domSetGloutonMain(points);
+    //System.out.println("Size : "+points.size());
+    //return domSetLocalSearchingNaifMain(points, domSet);
+
+    //ArrayList<Point> domSet = domSetGloutonMain(result);
+    //return domSetLocalSearchingNaifMain(result, domSet);
+    
+    //Solution otptimisee
+    ArrayList<Point> domSet =testDomSet(result);
+
+    return domSet;
   }
   
+  /**
+   * Methode qui trouve tous les points isoles (sans aucun voisin) dans un graphe
+   * @param graphe
+   * @return iles (points isoles)
+   */
+  public ArrayList<Point> iles(ArrayList<Point> graphe){
+	  ArrayList<Point> points = (ArrayList<Point>) graphe.clone();
+	  ArrayList<Point> iles = new ArrayList<Point>();
+	  
+	  Evaluation eval = new Evaluation();
+	 for(int i = 0; i < points.size(); i++){
+		  Point v = points.get(i);
+		  if(eval.neighbor(v, points, 80).size()==0){
+			  iles.add(v);
+		  } 
+	  }
+	  return iles;
+  }
+  /**
+   * Methode qui trouve tous les points qui ont un seul voisin
+   * de degree un dans un graphe
+   * @param graphe
+   * @return 
+   */
+  public ArrayList<Point> degreeUn(ArrayList<Point> graphe){
+	  ArrayList<Point> points = (ArrayList<Point>) graphe.clone();
+	  ArrayList<Point> degreeUn = new ArrayList<Point>();
+	  
+	  Evaluation eval = new Evaluation();
+	  for(int i = 0; i < points.size(); i++){
+		  Point v = points.get(i);
+		  if(eval.neighbor(v, points, 80).size()==1){
+			  degreeUn.add(v);
+		  }	
+	  }
+	  return degreeUn;
+  }
+  /**
+   * Pour un set de points appartenant au graphe (points2)
+   * retourne les voisins de ce set
+   * @param points2
+   * @param set
+   * @return voisins
+   */
+  public ArrayList<Point> voisins(ArrayList<Point> points2, ArrayList<Point> set2 ){
+	  ArrayList<Point> points = (ArrayList<Point>) points2.clone();
+	  ArrayList<Point> set = (ArrayList<Point>) set2.clone();
+	  ArrayList<Point> voisins = new ArrayList<Point>();
+	  
+	  Evaluation eval = new Evaluation();
+	  for(int i = 0; i < set.size(); i++){
+		  Point v = set.get(i);
+		  ArrayList<Point> voisinage =  eval.neighbor(v, points, 80);
+		  voisins.addAll(voisinage);
+	  }
+	  return voisins;
+  }
+  
+  /**
+   * 
+   * @param graphe
+   * @param domSet2
+   * @return
+   */
+  public ArrayList<Point> testDomSet(ArrayList<Point> graphe){
+	  ArrayList<Point> points = (ArrayList<Point>) graphe.clone();
+	  ArrayList<Point> domSet = new ArrayList<Point>();
+	  Evaluation eval = new Evaluation();
+	  //trouver les points isolee
+	  ArrayList<Point> iles =iles(points);
+	  points.removeAll(iles);
+	  //trouver tout les sommets de degree 1
+	  ArrayList<Point> degreeUn =degreeUn(points);
+	  points.removeAll(degreeUn);
+	  //trouver les voisins de l'ensemble degreeUn
+	  ArrayList<Point> voisinsDegreeUn = voisins(points, degreeUn);
+	  points.removeAll(voisinsDegreeUn);
+	  //sur points sans iles, sans degreeUn et sans voisinsDegreeUn
+	  //on appelle algo glouton
+	   domSet = domSetGloutonMain(points);
+	   //domSetLocalSearchingNaifMain(points, domSet);
+	   
+	   domSet.addAll(voisinsDegreeUn);
+	   domSet.addAll(iles);
+	   
+	   return domSet;
+  }
   
   public ArrayList<Point> optiDomSet(ArrayList<Point> points2, ArrayList<Point> domSet2) {
 	  ArrayList<Point> points = (ArrayList<Point>) points2.clone();
@@ -178,7 +271,14 @@ public class DefaultTeam {
   
   
   
-  
+  /**
+   * Method de vériification si le set retourné est bien un Dominant Set
+   * Un sous ensemble domSet pour lequel un point P dans points est soit dans domSet, 
+   * soit un voisin d'un sommet dans domSet
+   * @param points2
+   * @param domSet
+   * @return
+   */
   public boolean isValid(ArrayList<Point> points2, ArrayList<Point> domSet) {
 	  ArrayList<Point> points = (ArrayList<Point>) points2.clone();
 	  Evaluation eval = new Evaluation();
@@ -191,7 +291,12 @@ public class DefaultTeam {
 	  }
 	  return points.size() == 0;
   }
-  
+  /**
+   * domSetGloutonMain retourne le domSet à partir d'ajout du sommet de max connectivité 
+   * tant que la solution n'est pas valide
+   * @param points2
+   * @return
+   */
   public ArrayList<Point> domSetGloutonMain(ArrayList<Point> points2){ 
 	  ArrayList<Point> points = (ArrayList<Point>)points2.clone();
 	  ArrayList<Point> domSet = new ArrayList<>();
@@ -203,6 +308,11 @@ public class DefaultTeam {
 	  return domSet;
   }
 
+  /**
+   * domSetGlouton trouve le sommet le plus connecté dans points et l'ajoute au domSet
+   * @param points
+   * @param domSet
+   */
   public void domSetGlouton(ArrayList<Point> points, ArrayList<Point> domSet) {
 	  int max = 0;
 	  Point p_max = points.get(0);
