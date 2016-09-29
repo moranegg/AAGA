@@ -25,11 +25,13 @@ public class DefaultTeam {
 		//System.out.println("Size : "+points.size());
 		//return domSetLocalSearchingNaifMain(points, domSet);
 
-		//ArrayList<Point> domSet = domSetGloutonMain(result);
-		//return domSetLocalSearchingNaifMain(result, domSet);
+		//test voisinsParDegree
+		ArrayList<Point> voisinsParDegree = voisinsParDegree(result, result.get(0),1);
 
-		//Solution otptimisee
-		ArrayList<Point> domSet =testDomSet(result);
+		ArrayList<Point> domSet = domSetGloutonMain(result);
+		domSet = domSetLocalSearchingNaifMain(result, domSet);
+
+
 
 		return domSet;
 	}
@@ -100,17 +102,18 @@ public class DefaultTeam {
 	 */
 	public ArrayList<Point> voisinsParDegree(ArrayList<Point> points2, Point v, int d){
 		ArrayList<Point> points = (ArrayList<Point>) points2.clone();
-		
+
 		ArrayList<Point> voisins = new ArrayList<Point>();
-		int degree = d;
-		
+		voisins.add(v);
+
 		Evaluation eval = new Evaluation();
-		for(int i = 0; i < d; i++){
+		//d = degree de voisinage
+		for(int i = 1; i <= d; i++){
 			ArrayList<Point> voisinage = new ArrayList<Point>();
 			for(Point p: voisins){
-				voisinage =  eval.neighbor(p, points, 80);
+				voisinage =  eval.neighbor(p, points, 55);
 			}
-			
+
 			voisins.addAll(voisinage);
 		}
 		return voisins;
