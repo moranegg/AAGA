@@ -108,6 +108,11 @@ public class DefaultTeam {
 	  //trouver tout les sommets de degree 1
 	  ArrayList<Point> degreeUn =degreeUn(points);
 	  points.removeAll(degreeUn);
+	  //en supprimant les degreeUn, si on a une composante de deux sommets, elle s'efface
+	  //donc il faut une methode pour ne pas les supprimés
+	  
+	  
+	  
 	  //trouver les voisins de l'ensemble degreeUn
 	  ArrayList<Point> voisinsDegreeUn = voisins(points, degreeUn);
 	  points.removeAll(voisinsDegreeUn);
