@@ -28,8 +28,11 @@ public class DefaultTeam {
 		//test voisinsParDegree
 		ArrayList<Point> voisinsParDegree = voisinsParDegree(result, result.get(0),1);
 
-		ArrayList<Point> domSet = domSetGloutonMain(result);
-		domSet = domSetLocalSearchingNaifMain(result, domSet);
+		//ArrayList<Point> domSet = domSetGloutonMain(result);
+		//domSet = domSetLocalSearchingNaifMain(result, domSet);
+		
+		ArrayList<Point> domSet = ptasDomSet(result);
+		//domSet = domSetLocalSearchingNaifMain(result, domSet);
 
 
 
@@ -164,7 +167,7 @@ public class DefaultTeam {
 	 */
 	public ArrayList<Point> ptasDomSet(ArrayList<Point> points2){
 		ArrayList<Point> V = (ArrayList<Point>) points2.clone(); //copie de la liste initial des points
-		ArrayList<Point> W = new ArrayList<Point>(); // sous-graphe de V
+		//ArrayList<Point> W = new ArrayList<Point>(); // sous-graphe de V
 		ArrayList<Point> domSet = new ArrayList<Point>();
 		Evaluation eval = new Evaluation();
 
@@ -177,16 +180,30 @@ public class DefaultTeam {
 		//trouver les points isolee et enlever de la liste des points à traiter
 		ArrayList<Point> iles =iles(V);
 		V.removeAll(iles);
-
+		
+		/*2-separated collection 
+		 * "S:= {S1, ..,Sk} Si inclu dans V
+		 * for any two vertices s in Si and s' in Sj with i!=j, it is d(s,s')>2
+		 * T:= {T1,...,Tk} Ti inclu dans V avec Si inclu dans Ti
+		 * compute a local dominating set for a neighborhod of a vertex, 
+		 * and expand this neighborhood untill we have formed sets S and T which satisfy a desired bound" p.6
+		 */
+		Point v  =V.get(0); //arbitrary v
+		voisinageR = voisinsParDegree(V,v,4);// S
+		voisinageR2 = voisinsParDegree(V,v,6);// T
+		
+		domSet = domSetGloutonMain(voisinageR);
+		
+		
 		int r = 0;
-		int P = 1; //approximation ratio
+		int P = 2; //approximation ratio
+		
 		/*"Lemma 5. There exists a constant c = c(p) such that ^r1<=c, that is, 
 		 *the largest neighborhood to be considered during the iteration of the algorithm 
 		 * is bounded by a constant" p.10
 		 */
+		/*
 		int c = 0;
-
-
 
 		do {
 			for(int i = 0; i < r; i++) {
@@ -210,7 +227,7 @@ public class DefaultTeam {
 		} while((domSet.size()*P) < V.size());
 
 
-
+		*/
 
 		return domSet;
 	}
